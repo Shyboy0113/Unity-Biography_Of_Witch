@@ -88,6 +88,11 @@ namespace StarterAssets
 			cursorLocked = !cursorLocked;
 			SetCursorState(cursorLocked);
 
+			if (uiManager is null)
+            {
+				uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+            }
+
 			uiManager.ToggleMenuUI(isMenu);
 
 		}
