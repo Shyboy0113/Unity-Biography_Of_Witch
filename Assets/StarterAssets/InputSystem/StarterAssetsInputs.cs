@@ -13,8 +13,6 @@ namespace StarterAssets
 		public bool jump;
 		public bool sprint;
 
-		public bool isMenu = false;
-
 		public UIManager uiManager;
 
 		[Header("Movement Settings")]
@@ -27,32 +25,35 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
 		public void OnMove(InputValue value)
 		{
-			if(isMenu is false) MoveInput(value.Get<Vector2>());
+			if(UIManager.Instance.isMenu is false) MoveInput(value.Get<Vector2>());
 		}
 
 		public void OnLook(InputValue value)
 		{
 			if(cursorInputForLook)
 			{
-				if (isMenu is false) LookInput(value.Get<Vector2>());
+				if (UIManager.Instance.isMenu is false) LookInput(value.Get<Vector2>());
 			}
 		}
 
 		public void OnJump(InputValue value)
 		{
-			if (isMenu is false) JumpInput(value.isPressed);
+			if (UIManager.Instance.isMenu is false) JumpInput(value.isPressed);
 		}
 
 		public void OnSprint(InputValue value)
 		{
-			if (isMenu is false) SprintInput(value.isPressed);
+			if (UIManager.Instance.isMenu is false) SprintInput(value.isPressed);
 		}
 
 		public void OnMenu(InputValue value)
 		{
-			isMenu = !isMenu;
+			UIManager.Instance.isMenu = !UIManager.Instance.isMenu;
 			MenuInput(value.isPressed);			
 		}
+
+		
+
 
 #endif
 
@@ -93,7 +94,7 @@ namespace StarterAssets
 				uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
             }
 
-			uiManager.ToggleMenuUI(isMenu);
+			uiManager.ToggleMenuUI(UIManager.Instance.isMenu);
 
 		}
 
