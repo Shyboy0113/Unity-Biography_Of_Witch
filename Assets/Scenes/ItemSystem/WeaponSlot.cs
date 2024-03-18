@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class EquipmentSlot : MonoBehaviour
+public class WeaponSlot : MonoBehaviour
 {
     public Image itemImage;
 
@@ -13,22 +13,22 @@ public class EquipmentSlot : MonoBehaviour
     private void Awake()
     {
         InventoryManager.Instance.CheckInstance();
-        GetEquipmentData();
+        GetWeaponData();
     }
 
     private void OnEnable()
     {
-        GetEquipmentData();
+        GetWeaponData();
     }
 
-    public void GetEquipmentData()
+    public void GetWeaponData()
     {
         int idx = transform.GetSiblingIndex();
 
         Debug.Log(idx);
 
-        itemData = InventoryManager.Instance.GetEquipmentIndexData(idx);
-        
+        itemData = InventoryManager.Instance.GetWeaponIndexData(idx);
+
 
     }
 }

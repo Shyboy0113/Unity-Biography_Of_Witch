@@ -9,6 +9,8 @@ public class InventorySlot : MonoBehaviour
     public TMP_Text itemNumber;
     public Image itemImage;
 
+    public ItemData itemData;
+
     private void Awake()
     {
         InventoryManager.Instance.CheckInstance();
@@ -26,7 +28,7 @@ public class InventorySlot : MonoBehaviour
 
         Debug.Log(idx);
         
-        ItemData itemData = InventoryManager.Instance.GetIndexData(idx);
+        itemData = InventoryManager.Instance.GetInventoryIndexData(idx);
 
         if (itemData != null)
         {

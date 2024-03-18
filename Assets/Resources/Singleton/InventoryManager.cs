@@ -11,7 +11,9 @@ public class InventoryManager : Singleton<InventoryManager>
         public string itemType;
     }
 
-
+    [Header("무기창 데이터")]
+    public ItemData[] weaponSlots;
+    public bool[] weaponToggle;
 
     [Header("장비창 데이터")]
     public ItemData[] equipmentSlots;
@@ -31,13 +33,16 @@ public class InventoryManager : Singleton<InventoryManager>
     [Header("인벤토리 GameObject 위치")]
     public Transform inventorySlotParent;
     public Transform equipmentSlotParent;
+    public Transform weaponSlotParent;
 
     private void Awake()
     {
         //초기 인벤토리를 30칸으로 지정.
         InitializeInventory(30);
-        //초기 장비창 메모리 설정
+        //초기 장비 슬롯 메모리 설정
         InitializeEquipment(8);
+        //초기 무기 슬롯 메모리 설정
+        InitializeWeapon(4);
 
         //인벤토리 UI에 확인
         UpdateInspectorData();
@@ -51,6 +56,27 @@ public class InventoryManager : Singleton<InventoryManager>
             inventorySlotData[i].itemCode = inventorySlots[i].itemCode;
             inventorySlotData[i].itemNumber = inventorySlots[i].itemNumber;
             inventorySlotData[i].itemType = inventorySlots[i].itemType.ToString();
+        }
+    }
+
+
+    public void InitializeWeapon(int size)
+    {
+        weaponSlots = new ItemData[size];
+        weaponToggle = new bool[size];
+
+        for (int i = 0; i < size; i++)
+        {
+            GameObject obj = new GameObject("WeaponItem_" + i);
+            obj.transform.SetParent(weaponSlotParent, false);
+
+            weaponSlots[i] = obj.AddComponent<ItemData>();
+
+            weaponSlots[i].itemCode = "0000";
+            weaponSlots[i].itemNumber = 0;
+            weaponSlots[i].itemType = EquipmentType.Null;
+
+            weaponToggle[i] = false;
         }
     }
 
@@ -234,11 +260,37 @@ public class InventoryManager : Singleton<InventoryManager>
         }
     }
 
-    public ItemData GetIndexData(int idx)
+    public ItemData GetInventoryIndexData(int idx)
     {
         if (idx >= 0 && idx < inventorySlots.Length)
         {
             return inventorySlots[idx];
+        }
+        else
+        {
+            Debug.LogError("Index out of range: " + idx);
+            return null;
+        }
+    }
+
+    public ItemData GetEquipmentIndexData(int idx)
+    {
+        if (idx >= 0 && idx < equipmentSlots.Length)
+        {
+            return equipmentSlots[idx];
+        }
+        else
+        {
+            Debug.LogError("Index out of range: " + idx);
+            return null;
+        }
+    }
+
+    public ItemData GetWeaponIndexData(int idx)
+    {
+        if (idx >= 0 && idx < weaponSlots.Length)
+        {
+            return weaponSlots[idx];
         }
         else
         {
