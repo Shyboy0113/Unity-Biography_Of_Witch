@@ -52,7 +52,12 @@ public class UIManager : Singleton<UIManager>
 
     public void ToggleMenuUI(bool toggle)
     {
-        menuUI.SetActive(toggle);    
+        menuUI.SetActive(toggle);
+    }
+
+    public void InstanceManager()
+    {
+        Debug.Log("UIManager »ý¼º");
     }
     
 }

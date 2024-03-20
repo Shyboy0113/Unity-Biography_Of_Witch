@@ -24,9 +24,7 @@ public class WeaponSlot : MonoBehaviour
     public void GetWeaponData()
     {
         int idx = transform.GetSiblingIndex();
-
-        Debug.Log(idx);
-
+        
         itemData = InventoryManager.Instance.GetWeaponIndexData(idx);
 
 

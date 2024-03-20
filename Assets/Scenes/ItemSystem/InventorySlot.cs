@@ -20,14 +20,18 @@ public class InventorySlot : MonoBehaviour
     private void OnEnable()
     {
         GetInventoryData();
+        InventoryManager.Instance.OnInventoryChanged += GetInventoryData;
+    }
+
+    private void OnDisable()
+    {
+        InventoryManager.Instance.OnInventoryChanged -= GetInventoryData;
     }
 
     public void GetInventoryData()
     {
         int idx = transform.GetSiblingIndex();
-
-        Debug.Log(idx);
-        
+                
         itemData = InventoryManager.Instance.GetInventoryIndexData(idx);
 
         if (itemData != null)

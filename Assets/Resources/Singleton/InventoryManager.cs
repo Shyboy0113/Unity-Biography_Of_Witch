@@ -52,6 +52,20 @@ public class InventoryManager : Singleton<InventoryManager>
     public int SecondSwapIdx;
     public SlotType secondSlotType;
 
+    //인벤토리 데이터 값 변화시 발생하는 이벤트
+    public delegate void InventoryChanged();
+    public event InventoryChanged OnInventoryChanged;
+
+    private void OnEnable()
+    {
+        OnInventoryChanged += UpdateInspectorData;
+    }
+
+    private void OnDisable()
+    {
+        OnInventoryChanged -= UpdateInspectorData;
+    }
+
     private void Awake()
     {
         //초기 인벤토리를 30칸으로 지정.
@@ -75,7 +89,6 @@ public class InventoryManager : Singleton<InventoryManager>
             inventorySlotData[i].itemType = inventorySlots[i].itemType.ToString();
         }
     }
-
 
     public void InitializeWeapon(int size)
     {
@@ -323,23 +336,24 @@ public class InventoryManager : Singleton<InventoryManager>
 
     public void StartDragEvent()
     {
-
         isDragNDrop = true;
 
         FirstSwapIdx = targetSlotIdx;        
         firstSlotType = targetSlotType;
 
-        imageObject.SetActive(true);        
+        imageObject.SetActive(true);
 
     }
     public void EndDragEvent()
     {
+
         SecondSwapIdx = targetSlotIdx;
         secondSlotType = targetSlotType;
 
         if (firstSlotType != SlotType.Null && secondSlotType != SlotType.Null)
         {
             CompareSlotType();
+            OnInventoryChanged?.Invoke();
         }
 
         DeleteDragData();
@@ -367,34 +381,42 @@ public class InventoryManager : Singleton<InventoryManager>
                 
                 switch (secondSlotType)
                 {
-                    case SlotType.Inventory:
-                        ItemSwap(inventorySlots[FirstSwapIdx], inventorySlots[SecondSwapIdx]);
-                        ItemBoolSwap(inventoryToggle[FirstSwapIdx], inventoryToggle[SecondSwapIdx]);
+                    case SlotType.Inventory: //인벤토리 두 슬롯간의 교환은 조건문이 필요 없음
+                        ItemSwap(ref inventorySlots[FirstSwapIdx], ref inventorySlots[SecondSwapIdx]);
+                        ItemBoolSwap(ref inventoryToggle[FirstSwapIdx], ref inventoryToggle[SecondSwapIdx]);
                         break;
                     case SlotType.Equipment:
-                        ItemSwap(inventorySlots[FirstSwapIdx],equipmentSlots[SecondSwapIdx]);
-                        ItemBoolSwap(inventoryToggle[FirstSwapIdx],equipmentToggle[SecondSwapIdx]);
+                        //열거형의 순서와 장비창 배열의 인덱스가 같기 때문에,
+                        //인벤토리의 아이템 속성과 두 번째 인덱스가 같으면 통과됨.
+                        if ((int)inventorySlots[FirstSwapIdx].itemType == SecondSwapIdx)
+                        {
+                            ItemSwap(ref inventorySlots[FirstSwapIdx], ref equipmentSlots[SecondSwapIdx]);
+                            ItemBoolSwap(ref inventoryToggle[FirstSwapIdx], ref equipmentToggle[SecondSwapIdx]);
+                        }
                         break;
                     case SlotType.Weapon:
-                        ItemSwap(inventorySlots[FirstSwapIdx],weaponSlots[SecondSwapIdx]);
-                        ItemBoolSwap(inventoryToggle[FirstSwapIdx],weaponToggle[SecondSwapIdx]);
+                        //인벤토리의 아이템 속성이 무기 일 경우
+                        if (inventorySlots[FirstSwapIdx].itemType == EquipmentType.Weapon)
+                        {                            
+                            ItemSwap(ref inventorySlots[FirstSwapIdx], ref weaponSlots[SecondSwapIdx]);
+                            ItemBoolSwap(ref inventoryToggle[FirstSwapIdx], ref weaponToggle[SecondSwapIdx]);
+                        }
                         break;
                 }
                 break;
+
             case SlotType.Equipment:
                 switch (secondSlotType)
                 {
                     case SlotType.Inventory:
-                        ItemSwap(equipmentSlots[FirstSwapIdx],inventorySlots[SecondSwapIdx]);
-                        ItemBoolSwap(equipmentToggle[FirstSwapIdx], inventoryToggle[SecondSwapIdx]);
-                        break;
-                    case SlotType.Equipment:
-                        ItemSwap(equipmentSlots[FirstSwapIdx],equipmentSlots[SecondSwapIdx]);
-                        ItemBoolSwap(equipmentToggle[FirstSwapIdx], equipmentToggle[SecondSwapIdx]);
-                        break;
-                    case SlotType.Weapon:
-                        ItemSwap(equipmentSlots[FirstSwapIdx], weaponSlots[SecondSwapIdx]);
-                        ItemBoolSwap(equipmentToggle[FirstSwapIdx], weaponToggle[SecondSwapIdx]);
+                        //교체하는 인벤토리 아이템의 속성이 위치에 맞는 장비
+                        //or 인벤토리창이 비어있을 때(사실상 아이템 장착 해제)
+                        if (FirstSwapIdx == (int)inventorySlots[SecondSwapIdx].itemType
+                            ||( inventorySlots[SecondSwapIdx].itemCode == "0000" &&  !inventoryToggle[SecondSwapIdx]))
+                        {
+                            ItemSwap(ref equipmentSlots[FirstSwapIdx], ref inventorySlots[SecondSwapIdx]);
+                            ItemBoolSwap(ref equipmentToggle[FirstSwapIdx], ref inventoryToggle[SecondSwapIdx]);
+                        }
                         break;
                 }
                 break;
@@ -402,23 +424,25 @@ public class InventoryManager : Singleton<InventoryManager>
                 switch (secondSlotType)
                 {
                     case SlotType.Inventory:
-                        ItemSwap(weaponSlots[FirstSwapIdx], inventorySlots[SecondSwapIdx]);
-                        ItemBoolSwap(weaponToggle[FirstSwapIdx], inventoryToggle[SecondSwapIdx]);
-                        break;
-                    case SlotType.Equipment:
-                        ItemSwap(weaponSlots[FirstSwapIdx], equipmentSlots[SecondSwapIdx]);
-                        ItemBoolSwap(weaponToggle[FirstSwapIdx], equipmentToggle[SecondSwapIdx]);
+                        //교체하는 인벤토리 아이템의 속성이 무기,
+                        //or 인벤토리창이 비어있을 때(사실상 아이템 장착 해제)
+                        if (inventorySlots[SecondSwapIdx].itemType == EquipmentType.Weapon
+                             || (inventorySlots[SecondSwapIdx].itemCode == "0000" && !inventoryToggle[SecondSwapIdx]))
+                        {
+                            ItemSwap(ref weaponSlots[FirstSwapIdx], ref inventorySlots[SecondSwapIdx]);
+                            ItemBoolSwap(ref weaponToggle[FirstSwapIdx], ref inventoryToggle[SecondSwapIdx]);
+                        }
                         break;
                     case SlotType.Weapon:
-                        ItemSwap(weaponSlots[FirstSwapIdx], weaponSlots[SecondSwapIdx]);
-                        ItemBoolSwap(weaponToggle[FirstSwapIdx], weaponToggle[SecondSwapIdx]);
+                        ItemSwap(ref weaponSlots[FirstSwapIdx], ref weaponSlots[SecondSwapIdx]);
+                        ItemBoolSwap(ref weaponToggle[FirstSwapIdx], ref weaponToggle[SecondSwapIdx]);
                         break;
                 }
                 break;
         }
     }
 
-    public void ItemSwap(ItemData firstData, ItemData secondData)
+    public void ItemSwap(ref ItemData firstData, ref ItemData secondData)
     {
         ItemData dummyData;
 
@@ -428,7 +452,7 @@ public class InventoryManager : Singleton<InventoryManager>
 
     }
 
-    public void ItemBoolSwap(bool firstBool, bool secondBool)
+    public void ItemBoolSwap(ref bool firstBool, ref bool secondBool)
     {
         bool dummyBool;
 

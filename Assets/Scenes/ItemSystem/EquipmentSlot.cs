@@ -25,8 +25,6 @@ public class EquipmentSlot : MonoBehaviour
     {
         int idx = transform.GetSiblingIndex();
 
-        Debug.Log(idx);
-
         itemData = InventoryManager.Instance.GetEquipmentIndexData(idx);
         
 

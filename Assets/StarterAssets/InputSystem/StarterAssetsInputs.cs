@@ -13,8 +13,6 @@ namespace StarterAssets
 		public bool jump;
 		public bool sprint;
 
-		public UIManager uiManager;
-
 		[Header("Movement Settings")]
 		public bool analogMovement;
 
@@ -49,7 +47,7 @@ namespace StarterAssets
 		public void OnMenu(InputValue value)
 		{
 			UIManager.Instance.isMenu = !UIManager.Instance.isMenu;
-			MenuInput(value.isPressed);			
+			MenuInput(value.isPressed);
 		}
 
 		
@@ -87,14 +85,10 @@ namespace StarterAssets
 
 			// 마우스 커서 상태를 토글합니다.
 			cursorLocked = !cursorLocked;
-			SetCursorState(cursorLocked);
-
-			if (uiManager is null)
-            {
-				uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-            }
-
-			uiManager.ToggleMenuUI(UIManager.Instance.isMenu);
+			SetCursorState(cursorLocked);						
+			
+			UIManager.Instance.InstanceManager();
+			UIManager.Instance.ToggleMenuUI(UIManager.Instance.isMenu);
 
 		}
 

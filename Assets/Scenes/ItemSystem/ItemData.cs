@@ -12,7 +12,8 @@ public enum EquipmentType
     Necklace, //5
     Ring, //6
     Earrings, //7
-    Null //8
+    Weapon, //8
+    Null //9
 
 }
 

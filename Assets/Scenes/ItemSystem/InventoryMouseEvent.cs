@@ -11,7 +11,7 @@ public enum SlotType
 }
 
 public class InventoryMouseEvent : MonoBehaviour,
-    IPointerEnterHandler, IPointerExitHandler
+    IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
 
     //아이템 스왑용 변수
@@ -22,9 +22,25 @@ public class InventoryMouseEvent : MonoBehaviour,
     private Image _itemImage;
     private ItemData _itemData;
 
+
+
     private void Awake()
     {
         GetItemData();
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            //인벤토리/장비창 외부를 클릭했을 경우 드래그 취소
+            if (InventoryManager.Instance.isDragNDrop
+                && !InventoryManager.Instance.targetData)
+            {
+                InventoryManager.Instance.DeleteDragData();
+            }
+        }
+        
     }
 
     private void OnDisable()
