@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryManager : Singleton<InventoryManager>
 {
@@ -34,6 +35,22 @@ public class InventoryManager : Singleton<InventoryManager>
     public Transform inventorySlotParent;
     public Transform equipmentSlotParent;
     public Transform weaponSlotParent;
+
+    //드래그 앤 드롭 관련 변수
+    public ItemData targetData;
+    public SlotType targetSlotType;
+    public int targetSlotIdx;
+
+    public GameObject imageObject;
+    public Image targetImage;
+
+    public bool isDragNDrop = false;    
+
+    public int FirstSwapIdx;
+    public SlotType firstSlotType;
+
+    public int SecondSwapIdx;
+    public SlotType secondSlotType;
 
     private void Awake()
     {
@@ -303,6 +320,122 @@ public class InventoryManager : Singleton<InventoryManager>
     {
         Debug.Log("인스턴스 생성");
     }
-    
+
+    public void StartDragEvent()
+    {
+
+        isDragNDrop = true;
+
+        FirstSwapIdx = targetSlotIdx;        
+        firstSlotType = targetSlotType;
+
+        imageObject.SetActive(true);        
+
+    }
+    public void EndDragEvent()
+    {
+        SecondSwapIdx = targetSlotIdx;
+        secondSlotType = targetSlotType;
+
+        if (firstSlotType != SlotType.Null && secondSlotType != SlotType.Null)
+        {
+            CompareSlotType();
+        }
+
+        DeleteDragData();
+
+    }
+
+    public void DeleteDragData()
+    {
+        FirstSwapIdx = -1;
+        firstSlotType = SlotType.Null;
+        SecondSwapIdx = -1;
+        secondSlotType = SlotType.Null;
+        
+        targetImage = null;
+        imageObject.SetActive(false);
+
+        isDragNDrop = false;
+    }
+
+    public void CompareSlotType()
+    {
+        switch (firstSlotType)
+        {
+            case SlotType.Inventory:
+                
+                switch (secondSlotType)
+                {
+                    case SlotType.Inventory:
+                        ItemSwap(inventorySlots[FirstSwapIdx], inventorySlots[SecondSwapIdx]);
+                        ItemBoolSwap(inventoryToggle[FirstSwapIdx], inventoryToggle[SecondSwapIdx]);
+                        break;
+                    case SlotType.Equipment:
+                        ItemSwap(inventorySlots[FirstSwapIdx],equipmentSlots[SecondSwapIdx]);
+                        ItemBoolSwap(inventoryToggle[FirstSwapIdx],equipmentToggle[SecondSwapIdx]);
+                        break;
+                    case SlotType.Weapon:
+                        ItemSwap(inventorySlots[FirstSwapIdx],weaponSlots[SecondSwapIdx]);
+                        ItemBoolSwap(inventoryToggle[FirstSwapIdx],weaponToggle[SecondSwapIdx]);
+                        break;
+                }
+                break;
+            case SlotType.Equipment:
+                switch (secondSlotType)
+                {
+                    case SlotType.Inventory:
+                        ItemSwap(equipmentSlots[FirstSwapIdx],inventorySlots[SecondSwapIdx]);
+                        ItemBoolSwap(equipmentToggle[FirstSwapIdx], inventoryToggle[SecondSwapIdx]);
+                        break;
+                    case SlotType.Equipment:
+                        ItemSwap(equipmentSlots[FirstSwapIdx],equipmentSlots[SecondSwapIdx]);
+                        ItemBoolSwap(equipmentToggle[FirstSwapIdx], equipmentToggle[SecondSwapIdx]);
+                        break;
+                    case SlotType.Weapon:
+                        ItemSwap(equipmentSlots[FirstSwapIdx], weaponSlots[SecondSwapIdx]);
+                        ItemBoolSwap(equipmentToggle[FirstSwapIdx], weaponToggle[SecondSwapIdx]);
+                        break;
+                }
+                break;
+            case SlotType.Weapon:
+                switch (secondSlotType)
+                {
+                    case SlotType.Inventory:
+                        ItemSwap(weaponSlots[FirstSwapIdx], inventorySlots[SecondSwapIdx]);
+                        ItemBoolSwap(weaponToggle[FirstSwapIdx], inventoryToggle[SecondSwapIdx]);
+                        break;
+                    case SlotType.Equipment:
+                        ItemSwap(weaponSlots[FirstSwapIdx], equipmentSlots[SecondSwapIdx]);
+                        ItemBoolSwap(weaponToggle[FirstSwapIdx], equipmentToggle[SecondSwapIdx]);
+                        break;
+                    case SlotType.Weapon:
+                        ItemSwap(weaponSlots[FirstSwapIdx], weaponSlots[SecondSwapIdx]);
+                        ItemBoolSwap(weaponToggle[FirstSwapIdx], weaponToggle[SecondSwapIdx]);
+                        break;
+                }
+                break;
+        }
+    }
+
+    public void ItemSwap(ItemData firstData, ItemData secondData)
+    {
+        ItemData dummyData;
+
+        dummyData = firstData;
+        firstData = secondData;
+        secondData = dummyData;
+
+    }
+
+    public void ItemBoolSwap(bool firstBool, bool secondBool)
+    {
+        bool dummyBool;
+
+        dummyBool = firstBool;
+        firstBool = secondBool;
+        secondBool = dummyBool;
+
+    }
 
 }
