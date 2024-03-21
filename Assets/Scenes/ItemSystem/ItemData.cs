@@ -21,7 +21,7 @@ public class ItemData : MonoBehaviour
 {       
 
     public string itemCode = "0000";
-    public int itemNumber = 1;
+    public int itemNumber = 0;
     public EquipmentType itemType = EquipmentType.Null;
 
     public void AddItem(int num)
@@ -33,5 +33,6 @@ public class ItemData : MonoBehaviour
     {
         itemNumber -= num;
     }
+
 
 }

@@ -353,7 +353,6 @@ public class InventoryManager : Singleton<InventoryManager>
         if (firstSlotType != SlotType.Null && secondSlotType != SlotType.Null)
         {
             CompareSlotType();
-            OnInventoryChanged?.Invoke();
         }
 
         DeleteDragData();
@@ -450,6 +449,7 @@ public class InventoryManager : Singleton<InventoryManager>
         firstData = secondData;
         secondData = dummyData;
 
+        OnInventoryChanged?.Invoke();
     }
 
     public void ItemBoolSwap(ref bool firstBool, ref bool secondBool)
@@ -460,6 +460,17 @@ public class InventoryManager : Singleton<InventoryManager>
         firstBool = secondBool;
         secondBool = dummyBool;
 
+        OnInventoryChanged?.Invoke();
+    }
+
+    public int FindWeaponSlotBlank()
+    {
+        for (int idx=0; idx < weaponSlots.Length; idx++)
+        {
+            if (!weaponToggle[idx]) return idx;
+        }
+
+        return -1;
     }
 
 }
