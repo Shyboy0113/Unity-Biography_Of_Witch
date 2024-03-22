@@ -443,11 +443,28 @@ public class InventoryManager : Singleton<InventoryManager>
 
     public void ItemSwap(ref ItemData firstData, ref ItemData secondData)
     {
-        ItemData dummyData;
 
-        dummyData = firstData;
+
+        /*
+        //이렇게하면 얕은 복사라서 실제 값 변경 안 됨
+        ItemData dummyData = firstData;
         firstData = secondData;
         secondData = dummyData;
+        */
+
+        //ItemData는 클래스이기 때문에, 평범한 Swap로직을 사용할 경우 얕은 복사가 됨.
+        //깊은 복사를 위해, 필드의 모든 멤버 값을 직접 변경해줌.
+        string itemCode = firstData.itemCode;
+        int itemNumber = firstData.itemNumber;
+        EquipmentType itemType = firstData.itemType;
+
+        firstData.itemCode = secondData.itemCode;
+        firstData.itemNumber = secondData.itemNumber;
+        firstData.itemType = secondData.itemType;
+
+        secondData.itemCode = itemCode;
+        secondData.itemNumber = itemNumber;
+        secondData.itemType = itemType;        
 
         OnInventoryChanged?.Invoke();
     }
@@ -467,10 +484,27 @@ public class InventoryManager : Singleton<InventoryManager>
     {
         for (int idx=0; idx < weaponSlots.Length; idx++)
         {
-            if (!weaponToggle[idx]) return idx;
+            if (weaponToggle[idx] is false) return idx;
         }
 
         return -1;
     }
+
+    /*
+    private void OnDestroy()
+    {
+        DestroyChildren(inventorySlotParent);
+        DestroyChildren(equipmentSlotParent);
+        DestroyChildren(weaponSlotParent);
+    }
+
+    private void DestroyChildren(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+    */
 
 }

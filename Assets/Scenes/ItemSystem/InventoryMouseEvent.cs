@@ -166,6 +166,7 @@ public class InventoryMouseEvent : MonoBehaviour,
                         case SlotType.Weapon:
 
                             idx = InventoryManager.Instance.FindBlank();
+                            Debug.Log("버그 포인트");
                             if (idx != -1)
                             {
                                 InventoryManager.Instance.ItemSwap(ref InventoryManager.Instance.inventorySlots[idx], ref InventoryManager.Instance.weaponSlots[slotIdx]);

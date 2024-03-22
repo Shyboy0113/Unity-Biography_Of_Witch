@@ -19,7 +19,6 @@ public enum EquipmentType
 
 public class ItemData : MonoBehaviour
 {       
-
     public string itemCode = "0000";
     public int itemNumber = 0;
     public EquipmentType itemType = EquipmentType.Null;
@@ -33,6 +32,5 @@ public class ItemData : MonoBehaviour
     {
         itemNumber -= num;
     }
-
 
 }
